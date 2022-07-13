@@ -35,6 +35,7 @@ module.exports = {
       },
 
       // rootValue: 75,
+      // rootValue: (module) => (/vant/gi.test(module.file) ? 37.5 : 75),
 
       // 配置要转换的 CSS 属性
       // * 表示所有

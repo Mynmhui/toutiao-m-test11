@@ -2,6 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import '@/assets/fonts/iconfont.css'
 
 // 加载 Vant 核心组件库
 import Vant from 'vant'
@@ -13,7 +14,7 @@ import 'vant/lib/index.css'
 import './styles/index.less'
 
 // 加载动态设置 REM 基准值
-import 'amfe-flexible'
+import 'amfe-flexible/index.min.js'
 
 // 注册使用 Vant 组件库
 Vue.use(Vant)
