@@ -1,7 +1,12 @@
 <template>
   <div class="login-container">
     <!-- 导航栏 -->
-    <van-nav-bar class="page-nav-bar" title="登录" />
+    <van-nav-bar class="page-nav-bar" title="登录" @click-left="backToPrePage">
+      <template #left>
+        <van-icon slot="left" name="cross" />
+      </template>
+
+    </van-nav-bar>
     <!-- /导航栏 -->
 
     <!-- 登录表单 -->
@@ -20,7 +25,7 @@
       >
         <i slot="left-icon" class="toutiao toutiao-yanzhengma"></i>
         <template #button>
-          <van-button class="send-sms-btn" round size="small" type="default">发送验证码</van-button>
+          <van-button class="send-sms-btn" round size="mini" type="default">发送验证码</van-button>
         </template>
       </van-field>
       <div class="login-btn-wrap">
@@ -72,6 +77,9 @@ export default {
       }
 
       // 4. 根据请求响应结果处理后续操作
+    },
+    backToPrePage () {
+      this.$router.back()
     }
   }
 }
