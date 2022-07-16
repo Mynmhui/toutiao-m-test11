@@ -92,7 +92,7 @@ export default {
         this.$store.commit('setUser', res.data.data)
         this.$toast.success('登录成功')
         this.$router.push('/profile')
-        console.log('登录成功', res)
+        // console.log('登录成功', res)
       } catch (err) {
         this.$toast.fail('登录失败')
         console.log(err)
