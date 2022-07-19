@@ -11,15 +11,20 @@
         <div class="my-channel">
             <!-- 频道标题 -->
             <van-cell title="我的频道">
-                <van-button size="small" round class="edit-btn">编辑</van-button>
+                <van-button size="small" round class="edit-btn" @click="isEdit = !isEdit">
+                {{isEdit? '完成' : '编辑'}}
+                </van-button>
             </van-cell>
             <!-- 我的频道 -->
             <van-grid :border="false" gutter="10px">
                 <van-grid-item
-                v-for="item in myChannels"
+                v-for="(item, index) in myChannels"
                 :key="item.id"
-                :text="item.name">
-                    <template #icon> <van-icon name="cross" /> </template>
+                :text="item.name"
+                :class="{'active-channel': item.name === '推荐'}"
+                @click="onCliickMyChannel(item, index)"
+                >
+                    <template #icon > <van-icon v-show="isEdit && item.name !== '推荐'"  name="cross" /> </template>
                 </van-grid-item>
             </van-grid>
         </div>
@@ -33,7 +38,8 @@
             v-for="item in recommendChannels"
             :key="item.id"
             :text="item.name"
-            icon="plus"></van-grid-item>
+            icon="plus"
+            @click="addMyChannel(item)"></van-grid-item>
             </van-grid>
         </div>
     </div>
@@ -55,13 +61,30 @@ export default {
   data () {
     return {
       isShow: false,
-      allChannels: []
+      allChannels: [],
+      isEdit: false
     }
   },
   methods: {
     async getAllChannels () {
       const { data } = await getAllChannels()
       this.allChannels = data.data.channels
+    },
+    onCliickMyChannel (channel, index) {
+    // 边缘情况的判断
+      if (this.isEdit && channel.name !== '推荐') {
+      // 删除
+        this.$emit('del-mychannel', channel.id)
+      }
+      if (!this.isEdit) {
+      // 切换
+        this.isShow = false // 关闭弹框
+
+        this.$emit('change-active', index)
+      }
+    },
+    addMyChannel (myChannel) {
+      this.$emit('add-my-channel', { ...myChannel })
     }
   },
   computed: {
@@ -81,6 +104,11 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.active-channel {
+:deep(.van-grid-item__text) {
+color: red;
+}
+}
 .popupMain {
 padding-top: 100px;
 // 按钮样式
