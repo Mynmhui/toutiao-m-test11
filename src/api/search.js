@@ -6,3 +6,11 @@ export const getSearchSuggestion = (q) => {
     params: { q }
   })
 }
+// 搜索结果
+export const getSearchResult = (params) => {
+  return request({
+    url: '/v1_0/search',
+    method: 'GET',
+    params
+  })
+}

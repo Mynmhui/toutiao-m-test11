@@ -1,21 +1,24 @@
 <template>
     <div>
-    <van-cell v-for="(item, index) in highlightData" :key="index">
+    <van-cell
+    v-for="(item, index) in highlightData"
+    :key="index"
+    @click="$emit('search', suggestions[index])"
+    >
         <template #icon>
-            <van-icon name="search" class="search-icon"></van-icon>
+          <van-icon name="search" class="search-icon"></van-icon>
         </template>
         <template #title>
-    <span v-html="item"></span>
-</template>
+          <span v-html="item"></span>
+        </template>
     </van-cell>
-
     </div>
-
 </template>
 
 <script>
 // 引入API
 import { getSearchSuggestion } from '@/api'
+import { debounce } from 'lodash'
 export default {
   data () {
     return {
@@ -33,9 +36,10 @@ export default {
   // 监视属性绑定函数，如果methods里面的话
     keywords: {
       immediate: true,
-      handler () {
+      // handler 函数  参数1：函数，参数2：防抖时间  返回值：防抖之后的函数，和参数1功能一样
+      handler: debounce(function (val) {
         this.getSearchSuggestion()
-      }
+      }, 200)
     }
   },
   methods: {

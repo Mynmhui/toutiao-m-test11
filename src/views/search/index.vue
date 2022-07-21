@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="search-result">
     <form action="/">
   <van-search
     v-model="keywords"
@@ -10,13 +10,22 @@
     @focus="visibleSearchSuggestion"
     background="#3296fa"
     class="search"
-  />
+  ></van-search>
     <!-- <SearchHistory></SearchHistory>
     <SearchResult></SearchResult>
     <SearchSuggestion></SearchSuggestion> -->
 
 </form>
-<component :is="componentName" :keywords="keywords"></component>
+<!-- 动态的根据情况显示或隐藏搜索历史，搜索记录，搜索结果 -->
+<component
+:is="componentName"
+:keywords="keywords"
+@item="Item"
+:searchHistories="searchHistories"
+@search="onSearch"
+@allDelte="searchHistories = []"
+@clear-search-history="searchHistories = []"
+></component>
     </div>
 </template>
 
@@ -24,11 +33,13 @@
 import SearchHistory from './components/SearchHistory.vue'
 import SearchResult from './components/SearchResult.vue'
 import SearchSuggestion from './components/SearchSuggestion.vue'
+import { get, set } from '@/utils/storage'
 export default {
   data () {
     return {
       keywords: '',
-      isShowSearchResult: false
+      isShowSearchResult: false, // 控制搜索结果的显示或隐藏
+      searchHistories: get('TOUTIAO_LISHI') || []
     }
   },
   computed: {
@@ -44,6 +55,7 @@ export default {
       return 'SearchSuggestion'
     }
   },
+  // 注册自定义标签
   components: {
     SearchHistory,
     SearchResult,
@@ -51,11 +63,19 @@ export default {
   },
 
   methods: {
-
-    onSearch () {
+    // 搜索功能
+    onSearch (value) {
       console.log('正在搜索')
+      // console.log(value)
+      this.keywords = value
+      const index = this.searchHistories.indexOf(value)
+      if (index !== -1) {
+        this.searchHistories.splice(index, 1)
+      }
       this.isShowSearchResult = true
+      this.searchHistories.unshift(value)
     },
+    // 点击取消
     backToPrePage () {
       this.$router.go(-1)
     },
@@ -64,6 +84,14 @@ export default {
     // 如果keywords没有值显示搜索历史
     // 如果keywords有值显示搜索建议
       this.isShowSearchResult = false
+    },
+    Item (value) {
+      this.keywords = value
+    }
+  },
+  watch: {
+    searchHistories (value) {
+      set('TOUTIAO_LISHI', value)
     }
   }
 }
@@ -74,5 +102,18 @@ export default {
 [role="button"] {
 color: #fff;
 }
+}
+.search-container {
+  padding-top: 108px;
+  .van-search__action {
+    color: #fff;
+  }
+  .search-form {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+  }
 }
 </style>
