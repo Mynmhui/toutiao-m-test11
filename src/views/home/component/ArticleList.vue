@@ -14,9 +14,10 @@
         finished-text="没有更多了~ ~ ~"
         >
         <ArticleItem
-        v-for="item in articles"
-        :key="item.art_id"
+        v-for="(item, index) in articles"
+        :key="index"
         :articleInfo="item"
+        :articleId="item.art_id"
         ></ArticleItem>
         </van-list>
     </van-pull-refresh>

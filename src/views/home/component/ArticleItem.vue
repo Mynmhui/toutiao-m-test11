@@ -2,12 +2,14 @@
     <div>
         <!-- 渲染无图片 -->
     <van-cell
+        :to="{name: 'article', params: {articleId: articleInfo.art_id}}"
         v-if="articleInfo.cover.type === 0"
         :title="articleInfo.title"
-        :label="articleDesc" >
+        :label="articleDesc">
      </van-cell>
         <!-- 渲染 1 图片 -->
             <van-cell
+        :to="{name: 'article', params: {articleId: articleInfo.art_id}}"
         v-if="articleInfo.cover.type === 1"
         :title="articleInfo.title"
         :label="articleDesc">
@@ -18,12 +20,13 @@
         ></van-image>
      </van-cell>
         <!-- 渲染 3 图片 -->
-        <van-cell v-if="articleInfo.cover.type === 3" :title="articleInfo.title">
+        <van-cell
+        :to="{name: 'article', params: {articleId: articleInfo.art_id}}" v-if="articleInfo.cover.type === 3" :title="articleInfo.title">
         <template #label>
         <div>
         <van-image
-        v-for="item in articleInfo.cover.images"
-        :key="item"
+        v-for="(item, index) in articleInfo.cover.images"
+        :key="index"
         width="3rem"
         height="2rem"
         :src="item"
@@ -38,9 +41,14 @@
 <script>
 import dayjs from '@/utils/dayjs'
 export default {
+  name: 'artitem',
   props: {
     articleInfo: {
       type: Object,
+      required: true
+    },
+    articleId: {
+      type: [Number, String],
       required: true
     }
   },
