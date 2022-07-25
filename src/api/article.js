@@ -5,12 +5,12 @@ import request from '@/utils/request'
 /**
  * 获取频道的文章列表
  */
-export const getArticleInfo = articleId => {
-  return request({
-    method: 'GET',
-    url: '/v1_0/articles/' + articleId
-  })
-}
+// export const getArticleInfo = articleId => {
+//   return request({
+//     method: 'GET',
+//     url: '/v1_0/articles/' + articleId
+//   })
+// }
 
 /**
  * 文章接口模块 根据id获取指定文章

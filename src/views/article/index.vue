@@ -1,4 +1,5 @@
 <template>
+<!-- 文章详情页面 -->
   <div class="article-container">
     <!-- 导航栏 -->
     <van-nav-bar
@@ -63,12 +64,34 @@
         <!-- 文章内容 -->
         <div class="article-content markdown-body" v-html="article.content" ref="article-content"></div>
         <van-divider>正文结束</van-divider>
+        <!-- 文章评论 -->
+          <article-comment
+          @click-reply="onReplyClick"
+          :comment="commentList1"
+          :list="commentList"
+          @onload-success="totalCount = $event.total_count"
+          :source="article.art_id"/>
+        <!-- /文章评论 -->
         <!-- 底部区域 -->
         <div class="article-bottom">
-        <van-button class="comment-btn" type="default" round size="small"
+          <!-- 发布文章评论 -->
+          <van-popup v-model="isPostShow" position="bottom">
+          <post-comment @onpost-success="onPostSuccess" :target="article.art_id"></post-comment>
+          </van-popup>
+        <!-- 评论回复 -->
+        <van-popup
+          v-model="isReplyShow"
+          get-container="body"
+          position="bottom"
+          style="height: 90%"
+        >
+            <!-- <comment-reply v-if="isReplyShow" @close="isReplyShow = false" @click-close="isReplyShow = false" :comment="currentComment"  /> -->
+        </van-popup>
+        <!-- /评论回复 -->
+        <van-button class="comment-btn" type="default" round size="small" @click="isPostShow = true"
             >写评论</van-button
           >
-          <van-icon name="comment-o" info="123" color="#777" />
+          <van-icon name="comment-o" :info="totalCount" color="#777" />
           <collect-article
             class="btn-item"
             v-model="article.is_collected"
@@ -99,36 +122,63 @@
         <van-button class="retry-btn" @click="loadArtcileInfo">点击重试</van-button>
       </div>
       <!-- /加载失败：其它未知错误（例如网络原因或服务端异常） -->
+
     </div>
 
   </div>
 </template>
 
 <script>
-import { getArticleById, getArticleInfo } from '@/api'
+import { getArticleById } from '@/api'
 import { ImagePreview } from 'vant'
 import FollowUser from './component/FollowUser'
 import CollectArticle from './component/collectArticle'
 import likeArticle from './component/like-article.vue'
+import ArticleComment from './component/article-comment.vue'
+import postComment from './component/post-comment'
+// import CommentItem from './component/CommentItem.vue'
+// import CommentReply from './component/CommentReply.vue'
 export default {
   name: 'ArticleIndex',
   components: {
     FollowUser,
     CollectArticle,
-    likeArticle
+    likeArticle,
+    ArticleComment,
+    postComment
+    // CommentReply
+    // CommentItem
   },
   props: {
     articleId: {
       type: [Number, String, Object],
       required: true
     }
+    // list: {
+    //   type: Array,
+    //   default: () => []
+    // }
   },
   data () {
     return {
       article: {}, // 文章详情
-      isLoading: true
+      isLoading: true,
       // errStatus: 0,
       // followLoading: false
+      totalCount: 0,
+      isPostShow: false,
+      commentList: [],
+      commentList1: [
+        { a: 1 }, { b: 2 }
+      ], // 评论列表
+      isReplyShow: false,
+      onReplyClick: '',
+      currentComment: {} // 点击回复的那个评论对象
+    }
+  },
+  provide: function () {
+    return {
+      articleId: this.articleId
     }
   },
   computed: {},
@@ -158,7 +208,7 @@ export default {
       try {
         // 随机错误
         // thorw Error()
-        const { data } = await getArticleInfo(this.articleId)
+        const { data } = await getArticleById(this.articleId)
         this.article = data.data
       } catch (err) {
         // 加载失败 404
@@ -184,7 +234,13 @@ export default {
           })
         }
       })
+    },
+    onPostSuccess (res) {
+      console.log(res)
+      this.commentList.unshift(res.new_obj)
+      this.isPostShow = false
     }
+
   }
 }
 </script>
