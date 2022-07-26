@@ -1,94 +1,80 @@
 <template>
-<!-- 文章评论项 -->
   <van-cell class="comment-item">
     <van-image
       slot="icon"
       class="avatar"
       round
       fit="cover"
-      :src="comment.aut_photo"
+      :src="localComment.aut_photo"
     />
-    <div slot="title" class="title-wrap">
-      <div class="user-name">{{ comment.aut_name }}</div>
+    <div
+      slot="title"
+      class="title-wrap"
+    >
+      <div class="user_name">{{ localComment.aut_name }}</div>
       <van-button
         class="like-btn"
-        :class="{liked: comment.is_liking}"
+        :class="{
+          liked: localComment.is_liking
+        }"
         :loading="commentLoading"
-        :icon="comment.is_liking ? 'good-job' : 'good-job-o'"
+        :icon="localComment.is_liking ? 'good-job' : 'good-job-o'"
         @click="onCommentLike"
-      >{{ comment.like_count || '赞' }}</van-button>
+      >{{ localComment.like_count || '赞' }}</van-button>
     </div>
 
     <div slot="label">
-      <p class="comment-content">{{ comment.content }}</p>
+      <p class="comment-content">{{ localComment.content }}</p>
       <div class="bottom-info">
-        <span class="comment-pubdate">{{ comment.pubdate }}</span>
+        <span class="comment-pubdate">{{ localComment.pubdate }}</span>
         <van-button
           class="reply-btn"
           round
-          size="main"
-          type="default"
-          @cilck.native="btn(comment)"
-        >回复 {{ comment.reply_count }}</van-button>
+          @click="$emit('reply-click', localComment)"
+        >回复 {{ localComment.reply_count }}</van-button>
       </div>
     </div>
   </van-cell>
 </template>
-
 <script>
 import { addCommentLike, deleteCommentLike } from '@/api'
 export default {
   name: 'CommentItem',
-  components: {},
   props: {
     comment: {
-      type: Object,
-      required: true
+      type: Object
+      // required: true
     }
   },
   data () {
     return {
+      localComment: this.comment,
       commentLoading: false
     }
   },
-  computed: {},
-  watch: {},
-  created () {
-    console.log(111)
-  },
-  mounted () {},
   methods: {
     async onCommentLike () {
       this.commentLoading = true
       try {
-        // 如果已经赞了则取消点赞
-        if (this.comment.is_liking) {
-          await deleteCommentLike(this.comment.com_id)
-          this.comment.like_count--
+        if (this.localComment.is_liking) {
+          // 已点赞就取消
+          await deleteCommentLike(this.localComment.com_id)
+          this.localComment.like_count--
         } else {
-          // 如果没有赞，则点赞
-          await addCommentLike(this.comment.com_id)
-          this.comment.like_count++
+          // 没有则添加点赞
+          await addCommentLike(this.localComment.com_id)
+          this.localComment.like_count++
         }
-        // 更新视图状态
-        this.comment.is_liking = !this.comment.is_liking
-        this.$toast('操作成功')
-      } catch (err) {
-        console.log(err)
-        this.$toast('失败')
+        this.localComment.is_liking = !this.localComment.is_liking
+      } catch (error) {
+        this.$toast('操作失败，请重试')
       }
       this.commentLoading = false
-    },
-    btn (comment) {
-      console.log(1111)
-      this.$emit('click-reply', comment)
     }
-
   }
 }
 </script>
-
-<style scoped lang="less">
+<style lang='less' scoped>
 .comment-item {
   .avatar {
     width: 72px;
@@ -120,7 +106,7 @@ export default {
     align-items: center;
   }
   .reply-btn {
-    width: 135px;
+    // width: 135px;
     height: 48px;
     line-height: 48px;
     font-size: 21px;
@@ -137,7 +123,8 @@ export default {
       font-size: 30px;
     }
     &.liked {
-    color: aqua;}
+      color: #e5645f;
+    }
   }
 }
 </style>
