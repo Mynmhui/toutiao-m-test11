@@ -22,7 +22,11 @@ const routes = [
     ]
   },
   { path: '/search', component: () => import('@/views/search') },
-  { path: '/article/:articleId', name: 'article', component: () => import('@/views/article'), props: true }
+  { path: '/article/:articleId', name: 'article', component: () => import('@/views/article'), props: true },
+  {
+    path: '/user/profile',
+    component: () => import('@/views/UserProfile/index.vue')
+  }
 ]
 
 const router = new VueRouter({

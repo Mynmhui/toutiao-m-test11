@@ -1,0 +1,120 @@
+<template>
+<div class="user-profile">
+    <input type="file" hidden ref="file" @change="onFileChange">
+    <!-- 导航栏 -->
+    <van-nav-bar
+    class="page-nav-bar"
+    title="个人信息"
+    left-arrow @click-left="$router.back()" />
+    <!-- /导航栏 -->
+    <van-cell title="头像" is-link @click="$refs.file.click()">
+    <van-image
+        class="avatar"
+        fit="cover"
+        round
+        :src="user.photo"
+    />
+    </van-cell>
+    <van-cell title="昵称" @click="isShowUpdateName = true" v-model="user.name" is-link />
+    <van-cell title="性别" @click="isShowUpdateGender = true" :value="user.gender ? '女' : '男'" is-link />
+    <van-cell title="生日" @click="isShowUpdateBirthdy = true" :value="user.birthdy || '1977-00-00'" is-link />
+
+    <!-- 编辑昵称弹层 -->
+    <van-popup
+    v-model="isShowUpdateName"
+    style="height: 100%"
+    position="bottom">
+        <update-name v-if="isShowUpdateName" v-model="user.name" @close="isShowUpdateName = false" />
+    </van-popup>
+    <!-- 编辑昵称弹层 -->
+
+    <!-- 编辑性别弹层 -->
+    <van-popup
+    v-model="isShowUpdateGender"
+    position="bottom">
+        <update-gender v-if="isShowUpdateGender" v-model="user.gender" @close="isShowUpdateGender = false" />
+    </van-popup>
+    <!-- 编辑昵称弹层 -->
+
+    <!-- 编辑生日弹层 -->
+    <van-popup
+    v-model="isShowUpdateBirthdy"
+    position="bottom">
+      <update-birthdy v-if="isShowUpdateBirthdy" v-model="user.birthdy" @close="isShowUpdateBirthdy = false" />
+    </van-popup>
+    <!-- 编辑生日弹层 -->
+
+    <!-- 编辑头像弹层 -->
+    <van-popup
+    v-model="isUpdatePhotoShow"
+    style="height: 100%"
+    position="bottom">
+      <update-photo
+      v-if="isUpdatePhotoShow"
+      @update-photo="user.photo = $event"
+      @close="isUpdatePhotoShow = false"
+      :img="img"
+      ></update-photo>
+    </van-popup>
+    <!-- 编辑头像弹层 -->
+</div>
+</template>
+
+<script>
+import { getUserProfile } from '@/api'
+import updatePhoto from './components/update-photo.vue'
+import updateName from './components/update-name.vue'
+import updateGender from './components/update-gender.vue'
+import updateBirthdy from './components/update-birthdy.vue'
+export default {
+  name: 'userProfile',
+  components: {
+    updatePhoto,
+    updateName,
+    updateGender,
+    updateBirthdy
+  },
+  data () {
+    return {
+      user: {},
+      isShowUpdateName: false,
+      isShowUpdateGender: false,
+      isShowUpdateBirthdy: false,
+      isUpdatePhotoShow: false
+    }
+  },
+
+  created () {
+    this.loadProfile()
+  },
+
+  methods: {
+    async loadProfile () {
+      try {
+        const res = await getUserProfile()
+        this.user = res.data.data
+      } catch (err) {
+        this.$toast('获取数据失败')
+      }
+    },
+    onFileChange () {
+      // 获取文件对象
+      const file = this.$refs.file.files[0]
+      // 获取blob数据
+      this.img = window.URL.createObjectURL(file)
+      this.isUpdatePhotoShow = true
+      // 同一张图片，change事件不会触发
+      this.$refs.file.value = ''
+    }
+  }
+}
+</script>
+
+<style scoped lang='less'>
+.user-profile {
+  .avatar {
+    width: 60px;
+    height: 60px;
+  }
+}
+</style>
