@@ -17,7 +17,7 @@
     </van-cell>
     <van-cell title="昵称" @click="isShowUpdateName = true" v-model="user.name" is-link />
     <van-cell title="性别" @click="isShowUpdateGender = true" :value="user.gender ? '女' : '男'" is-link />
-    <van-cell title="生日" @click="isShowUpdateBirthdy = true" :value="user.birthdy || '1977-00-00'" is-link />
+    <van-cell title="生日" @click="isShowUpdateBirthdy = true" :value="user.birthday"     is-link />
 
     <!-- 编辑昵称弹层 -->
     <van-popup
@@ -40,7 +40,7 @@
     <van-popup
     v-model="isShowUpdateBirthdy"
     position="bottom">
-      <update-birthdy v-if="isShowUpdateBirthdy" v-model="user.birthdy" @close="isShowUpdateBirthdy = false" />
+      <update-birthdy v-if="isShowUpdateBirthdy" v-model="user.birthday" @close="isShowUpdateBirthdy = false" @newBir="newBir" />
     </van-popup>
     <!-- 编辑生日弹层 -->
 
@@ -76,6 +76,7 @@ export default {
   },
   data () {
     return {
+      birthdy: '',
       user: {},
       isShowUpdateName: false,
       isShowUpdateGender: false,
@@ -105,7 +106,12 @@ export default {
       this.isUpdatePhotoShow = true
       // 同一张图片，change事件不会触发
       this.$refs.file.value = ''
+    },
+    newBir (value) {
+      this.user.birthday = value
+      console.log(value)
     }
+
   }
 }
 </script>
